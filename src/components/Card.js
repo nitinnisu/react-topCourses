@@ -1,41 +1,50 @@
-import { useState } from "react";
+import React from 'react'
+import { FcLike, FcLikePlaceholder } from "react-icons/fc";
+import { toast } from 'react-toastify';
 
+const Card = (props) => {
+    let course = props.course;
+    let likedCourses = props.likedCourses;
+    let setLikedCourses = props.setLikedCourses;
 
-function Card({id, image,info,price,name, removeTour})  {
-    const[readmore,setReadmore] = useState(false);
-    
-    const description = readmore ? info :`${info.substring(0,200)}....`;
-    function readmoreHandler() {
-        setReadmore(!readmore);
+    function clickHandler() {
+        if (likedCourses.includes(course.id)) {
+            setLikedCourses((prev) => prev.filter((cid) => cid !== course.id));
+            toast.warning("Like removed");
+        } else {
+            if (likedCourses.length === 0) {
+                setLikedCourses([course.id]);
+            } else {
+                setLikedCourses((prev) => [...prev, course.id]);
+            }
+            toast.success("Liked Successfully");
+        }
     }
 
-
     return (
-        
-        <div className="card">
+        <div className='w-[300px] bg-bgDark bg-opacity-80 rounded-md overflow-hidden'>
+            <div className='relative'>
+                <img src={course.image.url} alt={course.title} className='w-full h-auto' />
 
-            <img src={image} className="image"></img>
-
-            <div className="tour-info">
-                <div className="tour-details">
-                    <h4 className="tour-price">₹ {price}</h4>
-                    <h4 className="tour-name">{name}</h4>
-                </div>
-
-                <div className="description">
-                    {description}
-                    <span className="read-more" onClick={readmoreHandler}>
-                        {readmore ? `Show Less`: `Read \More`}
-                    </span>
+                <div className='w-[40px] h-[40px] bg-white rounded-full absolute right-2 bottom-[-12px] grid place-items-center'>
+                    <button onClick={clickHandler}>
+                        {likedCourses.includes(course.id) ? (
+                            <FcLike fontSize="1.75rem" />
+                        ) : (
+                            <FcLikePlaceholder fontSize="1.75rem" />
+                        )}
+                    </button>
                 </div>
             </div>
 
-            <button className="btn-red" onClick={() => removeTour(id)}>
-                Not Interested
-            </button>
+            <div className='p-4'>
+                <p className="text-white font-semibold text-lg leading-6">{course.title}</p>
+                <p className='mt-2 text-white'>
+                    {course.description.length > 100 ? (course.description.substr(0, 100) + "...") : (course.description)}
+                </p>
+            </div>
         </div>
-        
     );
-}
+};
 
 export default Card;
